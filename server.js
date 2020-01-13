@@ -33,13 +33,22 @@ app.get("/api/timestamp/", function (req, res) {
 });
 
 app.get("/api/timestamp/:date_string", function (req, res) {
-    const date = new Date(req.params.date_string);
+    const datestr = req.params.date_string;
+    let date;
+    // check timestamp unix format
+    const parsed = parseInt(datestr)
+    if (!isNaN(parsed) && parsed == datestr){
+      date = new Date(parsed);
+    } else {
+      date = new Date(datestr);
+    }
     let response = {
         unix: null,
         utc: null
     }
     if (date instanceof Date && isNaN(date)) {
         response.utc = "Invalid Date";
+        response.error = "Invalid Date";  // needed to pass the test
     } else {
         response.unix = date.getTime();
         response.utc = date.toUTCString();
